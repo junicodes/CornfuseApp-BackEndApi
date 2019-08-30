@@ -9,23 +9,22 @@ class ContactUsRender {
 		this.route = app;
 	}
 
-	showAll(api) {
+	routeShowAll(api) {
 		this.route.get(api, (req, res) => {
 			//Hit the Query
-			const values = ['contact_us'];
-			contactusquery.showAll(values, req, res);
+			contactusquery.showAll(res);
 		})
 	}
 
-	showOne(api) {
+	routeShowOne(api) {
 		this.route.get(api, (req, res) => {
-			//Get Parameter from api url
 			const id = parseInt(req.params.id, 10);
-			const values = ['contact_us', 'id', id];
-			contactusquery.showOne(values, req, res);
+			//this key permit incomming request only for this route
+			const key=1
+			contactusquery.showOne(id, key, req, res);
 		})
 	}
-	create(api) {
+	routeCreate(api) {
 		//validate the input
 		const validate = [
 		check('name').not().isEmpty().isLength({min:3}).trim().escape().withMessage('Name Field is required and must have more than 3 character'),

@@ -17,7 +17,7 @@ const app = new express();
 app.use(express.static('public'));
 app.use(expressEgde);
 app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({ extended: false }));
+app.use(bodyParser.urlencoded({ extended: true }));
 
 //Set(Set specific value into our application) function for The template enginge\
 app.set('views', `${ __dirname }/views`);
@@ -29,18 +29,27 @@ const store = require('./store');
 
 //Renders Api End Routes
 
-//****** USER API ROUTES *****//
-const UserApi = require('./RenderApi/UserRender')
-const userapi = new UserApi(app);
-//Get All Users Routes
-userapi.getAll('/api/users');
+//****** USER API ROUTES Directory@(RenderApi/UserRenderApi) *****//
+const User = require('./RenderApi/UserRender')
+const user = new User(app);
+//Sign Up Users (post routes)
+user.routeCreate('/api/user/create');
+//All Users (get routes)
+user.routeShowAll('/api/users');
+//Show one User
+user.routeShowOne('/api/user/:id');
+//Delete user
+user.routeDelete('/api/user/delete/:id');
 
-//****** CONTACT US ROUTES*******//
-const ContactUsApi = require('./RenderApi/ContactUsRender')
-const contactus = new ContactUsApi(app);
-contactus.create('/api/contact_us/create');
-contactus.showOne('/api/contact_us/show/:id');
-contactus.showAll('/api/contact_us/show_all');
+//****** CONTACT US ROUTES Directory@(RenderApi/ContactUsRenderApi)*******//
+const ContactUs = require('./RenderApi/ContactUsRender')
+const contactus = new ContactUs(app);
+//Craate Contact-form (post routes)
+contactus.routeCreate('/api/contact_us/create');
+//View Contact-form (get routes)
+contactus.routeShowOne('/api/contact_us/show/:id');
+
+contactus.routeShowAll('/api/contact_us/show_all');
 
 
 
@@ -101,5 +110,5 @@ app.get('/contact', (req, res) =>
 //Start the server
 app.listen(7000, () =>
 {
-    console.log('Server running on http://localhost:7500')
+    console.log('Server running on http://localhost:7000')
 });
