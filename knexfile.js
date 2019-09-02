@@ -1,7 +1,7 @@
 const dotenv = require('dotenv');
 dotenv.config();
 
-if (process.env.ENIVIRONMENT == 'development') {
+if (process.env.ENVIRONMENT == 'development') {
 	const config = {
 	client: process.env.CLIENT_DEV,
 	connection: {
@@ -13,7 +13,7 @@ if (process.env.ENIVIRONMENT == 'development') {
 		pool: {min: 0, max: 7}
 	}
 	module.exports = config;
-}else if (process.env.ENIVIRONMENT == 'production') {
+}else if (process.env.ENVIRONMENT == 'production') {
 	const config = {
 	client: process.env.CLIENT_PROD,
 	connection: {
