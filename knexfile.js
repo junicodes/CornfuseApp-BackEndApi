@@ -1,13 +1,28 @@
+const dotenv = require('dotenv');
+dotenv.config();
 
-const config = {
-	client: 'mysql',
+if (process.env.ENIVIRONMENT == 'development') {
+	const config = {
+	client: process.env.CLIENT_DEV,
 	connection: {
-		host: 'localhost',
-		user: 'junicodefire',
-		password: '12345',
-		database: 'cornfuseapp'
-	},
-	pool: {min: 0, max: 7}
+		host: process.env.HOST_DEV,
+		user: process.env.USER_DEV,
+		password: process.env.PASSWORD_DEV,
+		database: process.env.DATABASE_DEV
+		},
+		pool: {min: 0, max: 7}
+	}
+	module.exports = config;
+}else if (process.env.ENIVIRONMENT == 'production') {
+	const config = {
+	client: process.env.CLIENT_PROD,
+	connection: {
+		host: process.env.HOST_PROD,
+		user: process.env.USER_PROD,
+		password: process.env.PASSWORD_PROD,
+		database: process.env.DATABASE_PROD
+		},
+		pool: {min: 0, max: 7}
+	}
+	module.exports = config;
 }
-
-module.exports = config;
