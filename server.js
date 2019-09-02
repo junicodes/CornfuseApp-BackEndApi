@@ -1,55 +1,71 @@
-//[
-//Import express module
+const dotenv = require('dotenv');
+dotenv.config();
 //import express engine
-const express = require('express')
+const express = require('express');
+//Register our Express App
+const app = new express();
 //Require bodyParser
 const bodyParser = require('body-parser')
 //Import the path
 const path = require('path')
 //Template engine
 const expressEgde = require('express-edge');
-//]
 
-//Register our Express App
-const app = new express();
+//Header AuthorizationProvider
+const passport    = require('passport');
+const jwt = require('jsonwebtoken');
 
+const strategy = require('./Providers/AuthServiceProvider');
+
+passport.use(strategy);
+app.use(passport.initialize());
+//Allow CrossOrigin
+const allowCrosDomain = function(req, res, next) {
+	res.header('Acess-Control-Allow-Origin', '*');
+	next();
+};
+app.use(allowCrosDomain);
 //Use the app Here(The USe function helps add functionality to express)
 app.use(express.static('public'));
 app.use(expressEgde);
+// parse application/json
 app.use(bodyParser.json());
+// parse application/x-www-form-urlencoded
 app.use(bodyParser.urlencoded({ extended: true }));
-
+// parse application/vnd.api+json as json
+app.use(bodyParser.json({type: 'application/vnd.api+json'}));
 //Set(Set specific value into our application) function for The template enginge\
 app.set('views', `${ __dirname }/views`);
 
-//////////////////////---------Local import---------///////////////////
-
-//Import the store.js
-const store = require('./store');
-
 //Renders Api End Routes
 
+
 //****** USER API ROUTES Directory@(RenderApi/UserRenderApi) *****//
-const User = require('./RenderApi/UserRender')
-const user = new User(app);
+const RouteUser = require('./RenderApi/UserRender')
+const routeuser = new RouteUser(app, passport);
 //Sign Up Users (post routes)
-user.routeCreate('/api/user/create');
+routeuser.signUp('/api/sign_up');
+//Sign In Users (post routes)
+routeuser.signIn('/api/sign_in');
 //All Users (get routes)
-user.routeShowAll('/api/users');
+routeuser.showAll('/api/users');
 //Show one User
-user.routeShowOne('/api/user/:id');
+routeuser.showOne('/api/user');
+//Show one User
+// routeuser.showOne('/api/user/:id');
 //Delete user
-user.routeDelete('/api/user/delete/:id');
+routeuser.delete('/api/user/delete');
+
 
 //****** CONTACT US ROUTES Directory@(RenderApi/ContactUsRenderApi)*******//
-const ContactUs = require('./RenderApi/ContactUsRender')
-const contactus = new ContactUs(app);
+const RouteContactUs = require('./RenderApi/ContactUsRender')
+const routecontactus = new RouteContactUs(app, passport);
 //Craate Contact-form (post routes)
-contactus.routeCreate('/api/contact_us/create');
+routecontactus.create('/api/contact_us/create');
 //View Contact-form (get routes)
-contactus.routeShowOne('/api/contact_us/show/:id');
+routecontactus.showOne('/api/contact_us/show/:id');
 
-contactus.routeShowAll('/api/contact_us/show_all');
+routecontactus.showAll('/api/contact_us/show_all');
 
 
 
@@ -57,7 +73,6 @@ contactus.routeShowAll('/api/contact_us/show_all');
 //****** END USER API ROUTES *****
 
 //////////////////////---------End Local import---------///////////////////
-//Register the Route
 app.get('/', (req, res) =>
 {
     // res.sendFile(path.resolve(__dirname, 'pages/index.html'))

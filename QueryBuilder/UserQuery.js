@@ -1,10 +1,14 @@
 //import the database connection
 const knex = require('knex')(require('../knexfile'))
+const User = require('../Model/UserModel');
+const jwt = require('jsonwebtoken');
+const dotenv = require('dotenv');
+dotenv.config();
 
 class UserQuery {
 	showAll(req, res) {
 		//SELECT QUERY
-     	knex('users').select('*')
+     	User.fetchAll()
      	.then(rows => {
 	 		 return res
 	            .status(200)
@@ -21,33 +25,21 @@ class UserQuery {
 	            })
      	})
 	}
-	showOne(id, key, req, res) {
-		knex('users').where('id', id)
-		.then(rows => {
-			if (key == 0) {
-				return res.status(201)
-				.json({
-					success: true,
-					message: "user created successfully!",
-					results: rows
-				})
-			}else if(key == 1){
-				return res.status(200)
-				.json({
-					success: true,
-					message: 'User info for user',
-					results: rows
-				})
-			}
-		})
-		.catch(err => {
-				return res.status(500)
+	showOne(req, res) {
+		if (req.user) {
+			return res.status(200)
+			.json({
+				success: true,
+				message: 'User info for user',
+				results: req.user
+			})
+		}else {
+			return res.status(500)
 				.json({
 					error: true,
-					message: 'An error occured while showing user',
-					hint: err
+					message: 'An error occured while showing user or invalid token!',
 				})
-		})
+		}
 	}
 	create(req, res) {
 	 const	values = {
@@ -55,24 +47,66 @@ class UserQuery {
 			email: req.body.email,
 			password: req.body.password
 		}
-		knex('users').insert(values)
+		new User(values).save()
 		.then(rows => {
 			if (rows) {
-				const key = 0;
-				this.showOne(rows[0], key, req, res);
+				return res.status(201)
+				.json({
+					success: true,
+					message: "user created successfully!",
+					results: rows
+				})
 			}
 		})
 		.catch(err => {
+			if (err.code == 'ER_DUP_ENTRY') {
+				return res
+				.status(400)
+				.json({
+					message: 'User already exist, please choose another username and email!',
+					hint: err
+				})
+			}
 			return res
 			.status(500)
 			.json({
-				message: 'An error ocurred while creating user, please try agin',
+				message: 'An error ocurred while creating user, please try again!',
 				hint: err
 			})
 		})
 	}
-	destroy(id, req, res) {
-		knex('users').where('id', id).del()
+	signIn(req, res) {
+		User.forge({username: req.body.username}).fetch().then(result => {
+		if (!result) {
+			return res.status(404)
+				    .json({
+				    	message: 'User not found'
+				    })
+		}
+		result.authenticate(req.body.password)
+			.then(user => {
+				const payload = {id: user.id};
+				const token = jwt.sign(payload, process.env.SECRET_OR_KEY, {
+					expiresIn: 10080
+				});
+				res.json({
+					message: 'Sign in successfully!',
+					user: result,
+					token: `Bearer ${token}`});
+			})
+			.catch(err => {
+				return res.status(401)
+					.json({
+						message: 'An Error occured, while authenticating user, please try again!',
+						err: err
+					});
+			})
+	});
+	}
+	destroy(req, res) {
+		const id = req.user.id;
+		console.log(id)
+		User.where('id', id).destroy()
 		.then(results => {
 			return res.status(200)
 				.json({
@@ -88,6 +122,27 @@ class UserQuery {
 				})
 		})
 	}
+	// showOne(req, res) {
+	// 	if (req.user.id ) {}
+	// 	const id = parseInt(req.params.id, 10);
+	// 	User.where('id', id).fetch()
+	// 	.then(rows => {
+	// 		return res.status(200)
+	// 		.json({
+	// 			success: true,
+	// 			message: 'User info for user',
+	// 			results: rows
+	// 		})
+	// 	})
+	// 	.catch(err => {
+	// 			return res.status(500)
+	// 			.json({
+	// 				error: true,
+	// 				message: 'An error occured while showing user',
+	// 				hint: err
+	// 			})
+	// 	})
+	// }
 }
 module.exports = UserQuery;
 

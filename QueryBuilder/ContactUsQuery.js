@@ -1,9 +1,9 @@
-const knex = require('knex')(require('../knexfile'))
+const ContactUs = require('../Model/ContactUs');
 
 class ConatactUsQuery  {
 
 	showAll(res) {
-		knex('contact_us').select('*')
+		ContactUs.fetchAll()
 		.then(rows => {
 			return res
 			.status(200)
@@ -23,26 +23,16 @@ class ConatactUsQuery  {
 		})
 	}
 
-	showOne(id, key, req, res) {
-
-		knex('contact_us').where('id', id)
+	showOne(req, res) {
+		const id = parseInt(req.params.id, 10);
+		ContactUs.where('id', id).fetch()
 		.then(rows => {
-			
-			if (key == 0) {
-				return res.status(201)
-				.json({
-					success: true,
-					message: "Successfull Submitted, thank you!",
-					results: rows
-				})
-			}else {
 				return res.status(200)
 				.json({
 					success: true,
 					message: 'Current message for contact form',
 					results: rows
 				})
-			}
 		})
 		.catch(err => {
 			return res.status(500)
@@ -61,12 +51,15 @@ class ConatactUsQuery  {
 				email: req.body.email,
 				message: req.body.message
 			}
-			knex('contact_us')
-			.insert(values)
+			new ContactUs(values).save()
 			.then(rows => {
 				if (rows) {
-					const key = 0;
-					this.showOne(rows[0], key, req, res);
+					return res.status(201)
+					.json({
+						success: true,
+						message: "Contact Form submitted successfully!",
+						results: rows
+					})
 				}
 			})
 			.catch(err => {

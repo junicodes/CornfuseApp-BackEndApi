@@ -5,34 +5,31 @@ const userquery = new UserQuery();
 //Import the validation module
 const {check, validationResult} = require('express-validator');
 class UserApi {
-	constructor(app) {
+	constructor(app, passport) {
 	this.route = app;
+	this.passport = passport.authenticate('jwt', {session: false});
 	}
 	//Get All users
-	routeShowAll(api) {
-	  this.route.get(api, (req, res) =>
+	showAll(api) {
+	  this.route.get(api, this.passport, (req, res) =>
 	    {
 	      //Query the database
 	      userquery.showAll(req, res);
 	    })
 
 	}
-	routeShowOne(api) {
-		this.route.get(api, (req, res) => {
-			//Query the database
-			const id = parseInt(req.params.id, 10);
-			console.log(id);
-			//this key permit in comming request onli for this route
-			const key = 1;
-			userquery.showOne(id, key, req, res);
+	showOne(api) {
+		this.route.get(api, this.passport, (req, res) => {
+			//Query the database;
+			userquery.showOne(req, res);
 		})
 	}
-	routeCreate(api) {
+	signUp(api) {
 		//validate the input
 		const validate = [
-			check('username').not().isEmpty().isLength({min:3}).trim().escape().withMessage('Name Field is required and must have more than 3 character'),
+			check('username').not().isEmpty().isLength({min:3}).trim().escape().withMessage('Username field is required and must have more than 3 character'),
 			check('email', 'Your email is not valid!').not().isEmpty().isEmail().normalizeEmail(),
-			check('password', 'password is required').not().isEmpty().trim().escape().isLength({min: 8}),
+			check('password', 'password is required!').not().isEmpty().trim().escape().isLength({min: 8}),
 		];
 
 		this.route.post(api, validate, (req, res) => {
@@ -48,11 +45,25 @@ class UserApi {
 			 }
 		})
 	}
-	routeDelete(api) {
-		this.route.delete(api, (req, res) => {
-			const id = parseInt(req.params.id, 10);
-			console.log(id);
-			userquery.destroy(id, req, res);
+	signIn(api) {
+		const validate = [
+			check('username').not().isEmpty().isLength({min:3}).trim().escape().withMessage('Username field is required and must have more than 3 character'),
+			check('password', 'password is required!').not().isEmpty().trim().escape().isLength({min: 8}),
+		];
+		this.route.post(api, validate, (req, res) => {
+			const errors = validationResult(req);
+			if (!errors.isEmpty()) {
+				return res
+					.status(422).jsonp(errors.array());
+			}else {
+				//Querybuilder
+				userquery.signIn(req, res);
+			}
+		})
+	}
+	delete(api) {
+		this.route.delete(api, this.passport, (req, res) => {
+			userquery.destroy(req, res);
 		})
 	}
 }
