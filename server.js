@@ -10,6 +10,9 @@ const bodyParser = require('body-parser')
 const path = require('path')
 //Template engine
 const expressEgde = require('express-edge');
+//Import CORS
+const cors = require('cors');
+
 
 //Header AuthorizationProvider
 const passport    = require('passport');
@@ -19,12 +22,14 @@ const strategy = require('./Providers/AuthServiceProvider');
 
 passport.use(strategy);
 app.use(passport.initialize());
-//Allow CrossOrigin
-const allowCrosDomain = function(req, res, next) {
-	res.header('Acess-Control-Allow-Origin', '*');
-	next();
-};
-app.use(allowCrosDomain);
+// //Allow CrossOrigin
+// const allowCrosDomain = function(req, res, next) {
+// 	res.header('Acess-Control-Allow-Origin', '*');
+// 	next();
+// };
+// app.use(allowCrosDomain);
+//Use cors
+app.use(cors());
 //Use the app Here(The USe function helps add functionality to express)
 app.use(express.static('public'));
 app.use(expressEgde);
