@@ -125,7 +125,7 @@ app.get('/contact', (req, res) =>
 
 
 //Start the server
-app.listen(7000, () =>
+app.listen(process.env.PORT || 7000, () =>
 {
     console.log('Server running 7000')
 });
