@@ -127,5 +127,5 @@ app.get('/contact', (req, res) =>
 //Start the server
 app.listen(7000, () =>
 {
-    console.log('Server running on http://localhost:7000')
+    console.log('Server running 7000')
 });
