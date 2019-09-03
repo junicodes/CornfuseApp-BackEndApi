@@ -22,12 +22,6 @@ const strategy = require('./Providers/AuthServiceProvider');
 
 passport.use(strategy);
 app.use(passport.initialize());
-// //Allow CrossOrigin
-// const allowCrosDomain = function(req, res, next) {
-// 	res.header('Acess-Control-Allow-Origin', '*');
-// 	next();
-// };
-// app.use(allowCrosDomain);
 //Use cors
 app.use(cors());
 //Use the app Here(The USe function helps add functionality to express)
