@@ -1,27 +1,29 @@
 //Api end Points 
 
-const UserQuery = require('../QueryBuilder/UserQuery')
-const userquery = new UserQuery();
+const UserController = require('../Controllers/UserController')
+const usercontroller = new UserController();
 //Import the validation module
 const {check, validationResult} = require('express-validator');
-class UserApi {
+
+class UserRoutes {
+
 	constructor(app, passport) {
-	this.route = app;
-	this.passport = passport.authenticate('jwt', {session: false});
+		this.route = app;
+		this.passport = passport.authenticate('jwt', {session: false});
 	}
 	//Get All users
 	showAll(api) {
 	  this.route.get(api, this.passport, (req, res) =>
 	    {
-	      //Query the database
-	      userquery.showAll(req, res);
+	      //controller the database
+	      usercontroller.showAll(req, res);
 	    })
 
 	}
 	showOne(api) {
 		this.route.get(api, this.passport, (req, res) => {
-			//Query the database;
-			userquery.showOne(req, res);
+			//controller the database;
+			usercontroller.showOne(req, res);
 		})
 	}
 	signUp(api) {
@@ -29,7 +31,7 @@ class UserApi {
 		const validate = [
 			check('username').not().isEmpty().isLength({min:3}).trim().escape().withMessage('Username field is required and must have more than 3 character'),
 			check('email', 'Your email is not valid!').not().isEmpty().isEmail().normalizeEmail(),
-			check('password', 'password is required!').not().isEmpty().trim().escape().isLength({min: 8}),
+			check('password', 'password is required and must be more than 8 characters!').not().isEmpty().trim().escape().isLength({min: 8}),
 		];
 
 		this.route.post(api, validate, (req, res) => {
@@ -40,8 +42,8 @@ class UserApi {
 						.status(422).jsonp(errors.array());
 			 }else {
 
-				//Querybuilder
-				userquery.create(req, res);
+				//controllerbuilder
+				usercontroller.create(req, res);
 			 }
 		})
 	}
@@ -56,17 +58,17 @@ class UserApi {
 				return res
 					.status(422).jsonp(errors.array());
 			}else {
-				//Querybuilder
-				userquery.signIn(req, res);
+				//controllerbuilder
+				usercontroller.signIn(req, res);
 			}
 		})
 	}
 	delete(api) {
 		this.route.delete(api, this.passport, (req, res) => {
-			userquery.destroy(req, res);
+			usercontroller.destroy(req, res);
 		})
 	}
 }
 
-module.exports = UserApi;
+module.exports = UserRoutes;
 

@@ -1,6 +1,6 @@
-const ContactUs = require('../Model/ContactUs');
+const ContactUs = require('../Models/UserContactUsModel');
 
-class ConatactUsQuery  {
+class UserContactUsController  {
 
 	showAll(res) {
 		ContactUs.fetchAll()
@@ -73,7 +73,7 @@ class ConatactUsQuery  {
 
 }
 
-module.exports = ConatactUsQuery;
+module.exports = UserContactUsController;
 
 
 

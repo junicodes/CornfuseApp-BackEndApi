@@ -5,6 +5,7 @@ exports.up = function(knex) {
   	t.string('name').notNullable()
   	t.string('email').notNullable()
   	t.text('message').notNullable()
+  	t.string('role').defaultTo(config.userRole.guest)
   	t.timestamps(false, true)
   })
 };

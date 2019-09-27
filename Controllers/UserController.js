@@ -1,11 +1,11 @@
 //import the database connection
 const knex = require('knex')(require('../knexfile'))
-const User = require('../Model/UserModel');
+const User = require('../Models/UserModel');
 const jwt = require('jsonwebtoken');
 const dotenv = require('dotenv');
 dotenv.config();
 
-class UserQuery {
+class UserController {
 	showAll(req, res) {
 		//SELECT QUERY
      	User.fetchAll()
@@ -53,7 +53,7 @@ class UserQuery {
 				return res.status(201)
 				.json({
 					success: true,
-					message: "user created successfully!",
+					message: "User account created successfully!",
 					results: rows
 				})
 			}
@@ -76,26 +76,41 @@ class UserQuery {
 		})
 	}
 	signIn(req, res) {
-		User.forge({username: req.body.username}).fetch().then(result => {
-		if (!result) {
-			return res.status(404)
-				    .json({
-				    	message: 'User not found'
-				    })
-		}
+		// User.forge({username: req.body.username}).fetch().then(result => {
+		new User()
+			.query({
+			    where: { username: `${req.body.username}`},
+			    orWhere: { email: `${req.body.username}` }
+			}).fetch().then(result => {
+
+			if (!result) {
+				return res.status(404)
+					    .json({
+					    	message: 'User not found, please check your username or password and try again'
+					    })
+			}
 		result.authenticate(req.body.password)
 			.then(user => {
-				const payload = {id: user.id};
+				const payload = {id: user.id };
 				const token = jwt.sign(payload, process.env.SECRET_OR_KEY, {
 					expiresIn: 10080
 				});
 				res.json({
 					message: 'Sign in successfully!',
 					user: result,
-					token: `Bearer ${token}`});
+					token: `Bearer ${token}`
+				 });
 			})
 			.catch(err => {
-				return res.status(401)
+
+				if (err.name == 'PasswordMismatchError') {
+					return res.status(404)
+					.json({
+						message: 'User not found, please check your username or password and try again'
+					})
+				}
+					console.log(err)
+					return res.status(401)
 					.json({
 						message: 'An Error occured, while authenticating user, please try again!',
 						err: err
@@ -144,7 +159,7 @@ class UserQuery {
 	// 	})
 	// }
 }
-module.exports = UserQuery;
+module.exports = UserController;
 
 
 

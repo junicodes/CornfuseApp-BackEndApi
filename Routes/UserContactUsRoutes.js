@@ -1,10 +1,10 @@
 //Require the contact Us querybuilder
-const ContactUsQuery = require('../QueryBuilder/ContactUsQuery')
-const contactusquery = new ContactUsQuery();
+const UserContactUsController = require('../Controllers/UserContactUsController')
+const contactuscontroller = new UserContactUsController();
 //Import the validation module
 const {check, validationResult} = require('express-validator');
 
-class ContactUsRender {
+class UserContactUsRoutes {
 	constructor(app) {
 		this.route = app;
 	}
@@ -12,13 +12,13 @@ class ContactUsRender {
 	showAll(api) {
 		this.route.get(api, (req, res) => {
 			//Hit the Query
-			contactusquery.showAll(res);
+			contactuscontroller.showAll(res);
 		})
 	}
 
 	showOne(api) {
 		this.route.get(api, (req, res) => {
-			contactusquery.showOne(req, res);
+			contactuscontroller.showOne(req, res);
 		})
 	}
 	create(api) {
@@ -37,8 +37,8 @@ class ContactUsRender {
 						.status(422).jsonp(errors.array());
 			 }else {
 
-				//Querybuilder
-				contactusquery.create(req, res);
+				//Controller and Querybuilder
+				contactuscontroller.create(req, res);
 			 }
 
 		})
@@ -46,4 +46,4 @@ class ContactUsRender {
 }
 
 
-module.exports = ContactUsRender;
+module.exports = UserContactUsRoutes;
