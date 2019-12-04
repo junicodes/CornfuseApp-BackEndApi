@@ -1,15 +1,23 @@
 
 
-const  roles = {
+const  configs = {
 
 	userRole: {
-		guest: 1,
-		user: 2,
-		admin: 4
-	}
-
-	permission: {
-		
+		admin: {
+			role: 0,
+			type: 'admin',
+		},
+		user:  {
+			role: 1,
+			type: 'user',
+		},
+		guest:  {
+			role: 2,
+			type: 'guest',
+		},
 	}
 
 }
+
+
+module.exports =  configs;

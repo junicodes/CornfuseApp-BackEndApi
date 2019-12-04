@@ -25,7 +25,7 @@ class UserController {
 	            })
      	})
 	}
-	showOne(req, res) {
+	showCurrent(req, res) {
 		if (req.user) {
 			return res.status(200)
 			.json({
@@ -34,13 +34,37 @@ class UserController {
 				results: req.user
 			})
 		}else {
-			return res.status(500)
+			return res.status(501)
 				.json({
 					error: true,
 					message: 'An error occured while showing user or invalid token!',
 				})
 		}
 	}
+
+	showOne(req, res) {
+		if (req.params.id) {
+			const id = parseInt(req.params.id, 10);
+			User.where('id', id).fetch()
+			.then(rows => {
+				return res.status(200)
+				.json({
+					success: true,
+					message: 'User info for user',
+					results: rows
+				})
+			})
+			.catch(err => {
+					return res.status(501)
+					.json({
+						error: true,
+						message: 'An error occured while showing user',
+						hint: err
+					})
+			})
+		}
+	}
+
 	create(req, res) {
 	 const	values = {
 			username: req.body.username,
@@ -68,7 +92,7 @@ class UserController {
 				})
 			}
 			return res
-			.status(500)
+			.status(501)
 			.json({
 				message: 'An error ocurred while creating user, please try again!',
 				hint: err
@@ -109,7 +133,6 @@ class UserController {
 						message: 'User not found, please check your username or password and try again'
 					})
 				}
-					console.log(err)
 					return res.status(401)
 					.json({
 						message: 'An Error occured, while authenticating user, please try again!',
@@ -120,7 +143,6 @@ class UserController {
 	}
 	destroy(req, res) {
 		const id = req.user.id;
-		console.log(id)
 		User.where('id', id).destroy()
 		.then(results => {
 			return res.status(200)
@@ -130,34 +152,14 @@ class UserController {
 				})
 		})
 		.catch(err => {
-			return res.status(500)
+			return res.status(501)
 				.json({
 					message: 'And error occured while deleting user',
 					hint: err
 				})
 		})
 	}
-	// showOne(req, res) {
-	// 	if (req.user.id ) {}
-	// 	const id = parseInt(req.params.id, 10);
-	// 	User.where('id', id).fetch()
-	// 	.then(rows => {
-	// 		return res.status(200)
-	// 		.json({
-	// 			success: true,
-	// 			message: 'User info for user',
-	// 			results: rows
-	// 		})
-	// 	})
-	// 	.catch(err => {
-	// 			return res.status(500)
-	// 			.json({
-	// 				error: true,
-	// 				message: 'An error occured while showing user',
-	// 				hint: err
-	// 			})
-	// 	})
-	// }
+	
 }
 module.exports = UserController;
 

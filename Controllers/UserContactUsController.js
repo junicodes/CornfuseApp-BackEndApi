@@ -15,7 +15,7 @@ class UserContactUsController  {
 		})
 		.catch(err => {
 			return res
-			.status(500)
+			.status(501)
 			.json({
 				error: true,
 				message: "An Error Occured!, please try again"
@@ -35,7 +35,7 @@ class UserContactUsController  {
 				})
 		})
 		.catch(err => {
-			return res.status(500)
+			return res.status(501)
 			.json({
 			    error: true,
 				message: 'An error occured, please try again',
@@ -63,7 +63,7 @@ class UserContactUsController  {
 				}
 			})
 			.catch(err => {
-				return res.status(500)
+				return res.status(501)
 				.json({
 					error: true,
 					message: 'An error Occured, please try again'

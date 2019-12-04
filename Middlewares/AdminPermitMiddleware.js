@@ -1,9 +1,9 @@
-const Admin = require('../Models/AdminModel')
+// const Admin = require('../Models/AdminModel')
 
-const AdminsOnly = (req, res, next) => {
+// const AdminsOnly = (req, res, next) => {
 
-	Admin.forge({permit: })
+// 	Admin.forge({permit: })
 
-}
+// }
 
-module.exports = AdminsOnly;
+// module.exports = AdminsOnly;

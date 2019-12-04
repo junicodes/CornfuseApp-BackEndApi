@@ -1,5 +1,5 @@
 //import the database connection
-const config = require('../configs/config.js')
+
 const knex = require('knex')(require('../knexfile'))
 
 const bookshelf = require('bookshelf');

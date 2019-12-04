@@ -4,20 +4,21 @@ const contactuscontroller = new UserContactUsController();
 //Import the validation module
 const {check, validationResult} = require('express-validator');
 
+
 class UserContactUsRoutes {
-	constructor(app) {
-		this.route = app;
+	constructor(router) {
+		this.router = router;
 	}
 
 	showAll(api) {
-		this.route.get(api, (req, res) => {
+		this.router.get(api, (req, res) => {
 			//Hit the Query
 			contactuscontroller.showAll(res);
 		})
 	}
 
 	showOne(api) {
-		this.route.get(api, (req, res) => {
+		this.router.get(api, (req, res) => {
 			contactuscontroller.showOne(req, res);
 		})
 	}
@@ -29,7 +30,7 @@ class UserContactUsRoutes {
 		check('message', 'Message is required').not().isEmpty().trim().escape().isLength({min: 5}),
 		];
 
-		this.route.post(api, validate, (req, res) => {
+		this.router.post(api, validate, (req, res) => {
 			//Invoke validation
 			const errors = validationResult(req);
 			if(!errors.isEmpty()){
