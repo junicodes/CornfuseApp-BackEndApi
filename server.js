@@ -81,13 +81,13 @@ routeRender.render(router, passport);
 // //****** END USER API ROUTES *****
 
 // //////////////////////---------End Local import---------///////////////////
-// app.get('/', (req, res) =>
-// {
-//     // res.sendFile(path.resolve(__dirname, 'pages/index.html'))
-//     // res.render('index');
-//     res.status(200)
-//             .send('Cornfuse App Api...');
-// })
+app.get('/', (req, res) =>
+{
+    // res.sendFile(path.resolve(__dirname, 'pages/index.html'))
+    // res.render('index');
+    res.status(200)
+            .send('Cornfuse App Api...');
+})
 
 // app.get('/about', (req, res) =>
 // {
