@@ -1,53 +1,34 @@
 //This script page render the file to the sever.js file
-const RouteUser = require('./UserRoutes')
-const RouteUserContactUs = require('./UserContactUsRoutes')
+const UserController = require('../Controllers/UserController');
+
+const RegisterValidate = require('../Validation/RegisterValidate');
+const LoginValidate = require('../Validation/LoginValidate');
+const AdminOnly = require('../Middlewares/AdminOnlyMiddleware');
 
 
-//GR -> General Route Only
-//AR -> Admin Route Only
-//UR -> User Route Only
+const render = async (Route, passport) => {
 
-const render = (router, passport) => {
-	//*****************************************************App Users Routes/Authentication
-	const routeuser = new RouteUser(router, passport);
+	const auth = await passport.authenticate('jwt', {session: false}); //App Authorization 
 
-//->GR
-	//Sign Up Users (post  method)
-	routeuser.signUp('/sign_up');
+	Route.get('/', (req, res) => {
+		res.status(200).send('Cornfuse App Api, Please as the prefix api/v1 to all api route...');
+	});
 
-	//Sign In Users (post  method)
-	routeuser.signIn('/sign_in');
+	Route.post('/sign-up', RegisterValidate, UserController.create);
 
-	//All Users (get  method)
-	routeuser.showAll('/users');
+	Route.post('/sign-in', LoginValidate, UserController.signIn);
 
-	//Show one User (get method)
-	routeuser.showCurrent('/user');
+	Route.get('/user', auth, UserController.showCurrent);
+	
+	Route.get('/user/:id', auth, UserController.showOne);
 
-	//Show one User
-	routeuser.showOne('/user/:id');
+	Route.get('/users/:page', auth, AdminOnly, UserController.showAll); //Admin Only
 
-	//Delete user
-	routeuser.delete('/user/delete');
-//<-GR
+	Route.delete('/user/delete', auth, UserController.destroyCurrent);
 
+	Route.delete('/user/delete/:id', auth, AdminOnly, UserController.destroyOther); //Admin Only
 
-	//*******************************************************Contact Us Routes
-	const routecontactus = new RouteUserContactUs(router, passport);
-//->GR
-	//Create Contact-form (post method)
-	routecontactus.create('/contact_us/create');
-//<-GR
-
-//->AU
-	//View one Contact-form (get  method)
-	routecontactus.showOne('/contact_us/show/:id');
-
-	//View all (get  method)
-	routecontactus.showAll('/contact_us/all');
-	//****** End *****//
-//->Au
 }
 
+module.exports = render;
 
-exports.render = render;

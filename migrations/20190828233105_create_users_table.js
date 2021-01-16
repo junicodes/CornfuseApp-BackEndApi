@@ -1,4 +1,4 @@
-const config = require('../configs/config.js')
+const {userRole} = require('../configs/config.js')
 
 exports.up = function(knex) {
   return knex.schema.createTable('users', (t) => {
@@ -8,13 +8,13 @@ exports.up = function(knex) {
   	t.string('password_digest').notNullable()
   	t.string('firstname').nullable()
   	t.string('lastname').nullable()
-  	t.string('image').default('cornfuse-default.png')
+  	t.string('profile_photo_url').default('https://ui-avatars.com/api/?name=victore+Mark&color=7F9CF5&background=EBF4FF')
   	t.string('status').default('You status helps clarify your personality!')
   	t.string('ip').nullable()
   	t.string('location').nullable()
     t.string('third_party_auth_id').nullable()
-    t.string('type').defaultTo(config.userRole.user.type)
-    t.boolean('role').defaultTo(config.userRole.user.role)
+    t.string('type').defaultTo(userRole.user.type)
+    t.integer('role').defaultTo(userRole.user.role)
   	t.timestamps(false, true)
   })
 };

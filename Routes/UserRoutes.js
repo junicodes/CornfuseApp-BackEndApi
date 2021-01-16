@@ -55,10 +55,7 @@ class UserRoutes {
 		})
 	}
 	signIn(api) {
-		const validate = [
-			check('username').not().isEmpty().isLength({min:3}).trim().escape().withMessage('Username field is required and must have more than 3 character'),
-			check('password', 'password is required!').not().isEmpty().trim().escape().isLength({min: 8}),
-		];
+	
 		this.router.post(api, validate, (req, res) => {
 			const errors = validationResult(req);
 			if (!errors.isEmpty()) {
